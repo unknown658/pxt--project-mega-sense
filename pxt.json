@@ -1,10 +1,11 @@
 {
     "name": "pxt-project-mega-sense",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Base code for BME688 chip",
     "license": "MIT",
     "dependencies": {
-        "core": "*"
+        "core": "*",
+        "EEPROM": "github:unknown658/pxt-project-memory#0.0.1"
     },
     "files": [
         "README.md",

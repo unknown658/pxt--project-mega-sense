@@ -197,8 +197,8 @@ namespace BME688 {
             if (ambTempPos < 59) {
                 let newAmbTemp_H = newAmbTemp >> 8
                 let newAmbTemp_L = newAmbTemp & 0xFF
-                writeByte(newAmbTemp_H, ((13 * 128) + ambTempPos))
-                writeByte(newAmbTemp_L, ((13 * 128) + ambTempPos + 1))
+                EEPROM.writeByte(newAmbTemp_H, ((13 * 128) + ambTempPos))
+                EEPROM.writeByte(newAmbTemp_L, ((13 * 128) + ambTempPos + 1))
                 //ambPrevTemps[ambTempPos] = newAmbTemp   // Store latest temperature in ambient temperature array
                 ambTempPos++
             }
@@ -484,7 +484,7 @@ namespace BME688 {
         if (ambTempFlag) {
             let ambTotal = 0
             for (let i = 0; i < (ambTempPos + 1); i++) {
-                let ambTempVal = (readByte((13 * 128) + i) << 8) | (readByte((13 * 128) + i + 1))
+                let ambTempVal = (EEPROM.readByte((13 * 128) + i) << 8) | (EEPROM.readByte((13 * 128) + i + 1))
                 ambTotal += ambTempVal
                 //ambTotal += ambPrevTemps[i]
             }
