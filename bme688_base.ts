@@ -632,7 +632,7 @@ namespace BME688 {
         iaqPercent = Math.trunc(humidityScore + gasScore)               // Air quality percentage is the sum of the humidity (25% weighting) and gas (75% weighting) scores
         iaqScore = (100 - iaqPercent) * 5                               // Final air quality score is in range 0 - 500 (see BME688 datasheet page 11 for details)
 
-        if (iaqScore <= 50) {
+        /*if (iaqScore <= 50) {
             airQualityRating = "Excellent"
         }
         else if ((iaqScore > 50) && (iaqScore <= 100)) {
@@ -652,9 +652,10 @@ namespace BME688 {
         }
         else if (iaqScore > 350) {
             airQualityRating = "Extremely Polluted"
-        }
+        }*/
     }
 
+    // Take an input value which falls between a set range and convert it to its relative value in a different range (e.g. 5 in range 0-10 becomes 50 in range 0-100)
     function mapValue(val: number, frLow: number, frHigh: number, toLow: number, toHigh: number): number {
         let mappedVal = toLow + (((val - frLow) / (frHigh - frLow)) * (toHigh - toLow))
         return mappedVal
@@ -673,37 +674,30 @@ namespace BME688 {
 
         if (iaqScore < 25) {
             // eCO2 in range 250-400ppm
-            //eCO2Value = Math.trunc(Math.map(iaqScore, 0, 24, 250, 399))
             eCO2Value = mapValue(iaqScore, 0, 24, 250, 399)
         }
         else if (iaqScore < 101) {
             // eCO2 in range 400-1000ppm
-            //eCO2Value = Math.trunc(Math.map(iaqScore, 25, 100, 400, 1000))
             eCO2Value = mapValue(iaqScore, 25, 100, 400, 1000)
         }
         else if (iaqScore < 151) {
             // eCO2 in range 1000-2000ppm
-            //eCO2Value = Math.trunc(Math.map(iaqScore, 101, 150, 1001, 2000))
             eCO2Value = mapValue(iaqScore, 101, 150, 1001, 2000)
         }
         else if (iaqScore < 201) {
             // eCO2 in range 2000-3500ppm
-            //eCO2Value = Math.trunc(Math.map(iaqScore, 151, 200, 2001, 3500))
             eCO2Value = mapValue(iaqScore, 151, 200, 2001, 3500)
         }
         else if (iaqScore < 351) {
             // eCO2 in range 3500-5000ppm
-            //eCO2Value = Math.trunc(Math.map(iaqScore, 201, 350, 3501, 5000))
             eCO2Value = mapValue(iaqScore, 201, 350, 3501, 5000)
         }
         else if (iaqScore < 450) {
             // eCO2 > eCO2 in range 5000-40000ppm
-            //eCO2Value = Math.trunc(Math.map(iaqScore, 351, 450, 5001, 40000))
             eCO2Value = mapValue(iaqScore, 351, 450, 5001, 40000)
         }
         else if (iaqScore > 450) {
             // eCO2 > 40000ppm
-            //eCO2Value = Math.trunc(Math.map(iaqScore, 451, 500, 40001, 100000))
             eCO2Value = mapValue(iaqScore, 451, 500, 40001, 100000)
         }
 
@@ -717,13 +711,13 @@ namespace BME688 {
             humidityFactor = ((humidityReading - humidityBaseline) / humidityBaseline)
             temperatureFactor = ((temperatureReading - ambientTemperature) / ambientTemperature)
             combinedFactor = 1 + humidityFactor + temperatureFactor
-            eCO2Value = Math.trunc(eCO2Value * combinedFactor)
+            eCO2Value = eCO2Value * combinedFactor
         }
         else if (humidityOffset > 0) {
-            eCO2Value = Math.trunc(eCO2Value * (((humidityReading - humidityBaseline) / humidityBaseline) + 1))
+            eCO2Value = eCO2Value * (((humidityReading - humidityBaseline) / humidityBaseline) + 1)
         }
         else if (temperatureOffset > 0) {
-            eCO2Value = Math.trunc(eCO2Value * (((temperatureReading - ambientTemperature) / ambientTemperature) + 1))
+            eCO2Value = eCO2Value * (((temperatureReading - ambientTemperature) / ambientTemperature) + 1)
         }
 
         // If measurements are taking place rapidly, breath detection is possible due to the sudden increase in humidity (~7-10%)
@@ -731,8 +725,10 @@ namespace BME688 {
         // (These values were based on 'breath-testing' with another eCO2 sensor with algorithms built-in)
         if ((measureTime - prevMeasureTime) <= 5000) {
             if ((humidityReading - prevHumidity) >= 3) {
-                eCO2Value = Math.trunc(eCO2Value + 1500)
+                eCO2Value = eCO2Value + 1500
             }
         }
+
+        eCO2Value = Math.trunc(eCO2Value)
     }
 }
