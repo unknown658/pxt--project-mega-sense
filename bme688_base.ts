@@ -141,7 +141,7 @@ namespace BME688 {
 
     //Global variables used for storing one copy of value, these are used in multiple locations for calculations
     let bme688InitFlag = false
-    let gasInit = false
+    export let gasInit = false
     let measurementsBuf = pins.createBuffer(8)
     let writeBuf = pins.createBuffer(2)
 
@@ -447,7 +447,7 @@ namespace BME688 {
             bme688Init()
         }
         if (gasInit == false) {
-            setupGasSensor(300, 150)
+            initGasSensor(300, 150)
         }
 
         ambTempFlag = false
