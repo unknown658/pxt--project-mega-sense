@@ -1,6 +1,6 @@
 {
     "name": "pxt-project-mega-sense",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "description": "Base code for BME688 chip",
     "license": "MIT",
     "dependencies": {
