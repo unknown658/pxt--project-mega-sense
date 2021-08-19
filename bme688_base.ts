@@ -497,6 +497,106 @@ namespace BME688 {
         //clear()
     }
 
+    // Read Temperature from sensor as a Number.
+    // Units for temperature are in °C (Celsius) or °F (Fahrenheit) according to selection.
+    export function readTemperature(temperature_unit: TemperatureUnitList): number {
+        let temperature = temperatureReading
+        // Change temperature from °C to °F if user selection requires it
+        if (temperature_unit == TemperatureUnitList.F) {
+            temperature = ((temperature * 18) + 320) / 10
+        }
+
+        return temperature
+    }
+
+    // Read Pressure from sensor as a Number.
+    // Units for pressure are in Pa (Pascals) or mBar (millibar) according to selection.
+    export function readPressure(pressure_unit: PressureUnitList): number {
+        let pressure = pressureReading
+        //Change pressure from Pascals to millibar if user selection requires it
+        if (pressure_unit == PressureUnitList.mBar)
+            pressure = pressure / 100
+
+        return pressure
+    }
+
+    // Read Humidity from sensor as a Number.
+    // Humidity is output as a percentage.
+    export function readHumidity(): number {
+        return humidityReading
+    }
+
+    // Read Gas Resistance from sensor as a Number.
+    // Units for gas resistance are in Ohms.
+    export function readGasRes(): number {
+        if (gasInit == false) {
+            //clear()
+            //show("ERROR", 3, ShowAlign.Centre)
+            //show("Gas Sensor not setup!", 5, ShowAlign.Centre)
+            return 0
+        }
+
+        return gasResistance
+    }
+
+    // Read eCO2 from sensor as a Number (250 - 40000+ppm).
+    // Units for eCO2 are in ppm (parts per million).
+    export function readeCO2(): number {
+        if (gasInit == false) {
+            //clear()
+            //show("ERROR", 3, ShowAlign.Centre)
+            //show("Gas Sensor not setup!", 5, ShowAlign.Centre)
+            return 0
+        }
+        calcIAQ()
+        calcCO2()
+
+        let eCO2 = eCO2Value
+
+        return eCO2
+    }
+
+    // Return the Air Quality rating as a percentage (0% = Bad, 100% = Excellent).
+    export function getAirQualityPercent(): number {
+        if (gasInit == false) {
+            //clear()
+            //show("ERROR", 3, ShowAlign.Centre)
+            //show("Gas Sensor not setup!", 5, ShowAlign.Centre)
+            return 0
+        }
+        calcIAQ()
+
+        return iaqPercent
+    }
+
+    // Return the Air Quality rating as an IAQ score (500 = Bad, 0 = Excellent).
+    // These values are based on the BME688 datasheet, Page 11, Table 6.
+    export function getAirQualityScore(): number {
+        if (gasInit == false) {
+            //clear()
+            //show("ERROR", 3, ShowAlign.Centre)
+            //show("Gas Sensor not setup!", 5, ShowAlign.Centre)
+            return 0
+        }
+        calcIAQ()
+
+        return iaqScore
+    }
+
+    // Return the Air Quality rating as a text-based categorisation.
+    // These values are based on the BME688 datasheet, Page 11, Table 6.
+    export function getAirQualityText(): string {
+        if (gasInit == false) {
+            //clear()
+            //show("ERROR", 3, ShowAlign.Centre)
+            //show("Gas Sensor not setup!", 5, ShowAlign.Centre)
+            return "NULL"
+        }
+        calcIAQ()
+
+        return airQualityRating
+    }
+
     // Calculate the Index of Air Quality score from the current gas resistance and humidity readings
     // iaqPercent: 0 to 100% - higher value = better air quality
     // iaqScore: 25 should correspond to 'typically good' air, 250 to 'typically polluted' air
